@@ -9,9 +9,10 @@ class <%= migration_class_name %> < ActiveRecord::Migration
         t.string :locale, :length => 5, :required => true
         t.text :content
       end
-      
+
       # add index
       add_index :record_translations, [:translatable_id, :translatable_type, :translatable_field, :locale], :name => "record_translations_index", :unique => true
+      add_index :record_translations, [:translatable_id, :translatable_type], :name => :index_translatable_id_translatable_type
     end
 
     # loop through columns and insert into record translations table
@@ -25,13 +26,13 @@ class <%= migration_class_name %> < ActiveRecord::Migration
     remove_column :<%= translatable_table %>, :<%= column %>
     <% end %>
   end
-  
+
   def self.down
     # re-add deleted columns
     # TODO: make sure that re-added columns are the same type as the original, if possible<% columns.each do |column| %>
     add_column :<%= translatable_table %>, :<%= column %>, :text
     <% end %>
-    
+
     # insert values back into original table
     <%= translatable_class %>.all.each do |record|<% columns.each do |column| %>
       # get content
