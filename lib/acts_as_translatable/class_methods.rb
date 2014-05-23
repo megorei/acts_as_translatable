@@ -2,8 +2,8 @@ module ActsAsTranslatable
   module ClassMethods
     def acts_as_translatable_on(*fields)
       after_initialize :translations
-      has_many :record_translations, :foreign_key => :translatable_id, :conditions => { :translatable_type => name}, :dependent => :destroy
-      default_scope :include => :record_translations
+      has_many :record_translations, lambda { where :translatable_type => name }, :foreign_key => :translatable_id, :dependent => :destroy
+      default_scope { includes :record_translations }
 
       accepts_nested_attributes_for :record_translations
 
